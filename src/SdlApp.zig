@@ -3,10 +3,25 @@ const sdl = @import("sdl2");
 
 const Self = @This();
 
+const Square = struct {
+    pos: sdl.Point,
+    size: c_int,
+
+    pub fn getRect(self: *const Square) sdl.Rectangle {
+        return .{
+            .x = self.pos.x - self.size>>1, 
+            .y = self.pos.y - self.size>>1,
+            .width = self.size,
+            .height = self.size,
+        };
+    }
+};
+
 window: sdl.Window,
 renderer: sdl.Renderer,
 bg_color: sdl.Color = sdl.Color.black,
 fg_color: sdl.Color = sdl.Color.white,
+square: Square = Square{.pos = .{.x = 40, .y = 40}, .size = 20},
 
 pub fn run(self: *const Self) !void {
     main_loop: while (true) {
@@ -30,6 +45,8 @@ fn render(self: *const Self) !void {
     try self.renderer.clear();
     try self.renderer.setColor(self.bg_color);
     try self.renderer.fillRect(self.renderer.getViewport());
+    try self.renderer.setColor(self.fg_color);
+    try self.renderer.fillRect(self.square.getRect());
     self.renderer.present();
 }
 
